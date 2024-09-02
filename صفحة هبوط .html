@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>نموذج تسجيل الاشتراك</title>
+</head>
+<body>
+    <h2>تسجيل اشتراك</h2>
+    <form action="register.php" method="post">
+        <label for="name">الاسم:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="email">البريد الإلكتروني:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <label for="password">كلمة المرور:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <input type="submit" value="تسجيل">
+    </form>
+    <?php
+// بيانات الاتصال بقاعدة البيانات
+$servername = "ahmed-aee99.j.aivencloud.com"; // استبدل بـ hostname الفعلي
+$username = "avnadmin"; // استبدل بـ username الفعلي
+$password = "AVNS_SIG8_XddP3sBMp28_WP"; // استبدل بـ password الفعلي
+$dbname = "defaultdb"; // استبدل باسم قاعدة البيانات
+
+// إنشاء اتصال بقاعدة البيانات
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    echo "تم الاتصال بقاعدة البيانات بنجاح";
+} catch(PDOException $e) {
+    echo "فشل الاتصال: " . $e->getMessage();
+}
+
+// إذا تم إرسال النموذج
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // تشفير كلمة المرور
+
+    // إعداد الاستعلام SQL
+    $sql = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':name', $name);
+    $stmt->bindParam(':email', $email);
+    $stmt.bindParam(':password', $password);
+    $stmt->execute();
+
+    echo "تم تسجيل المستخدم بنجاح";
+}
+?>
+</body>
+</html>
